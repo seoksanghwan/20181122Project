@@ -30,13 +30,12 @@ DO NOT MODIFY
 */
 exports.isValidXML = xmlString => {
   const singleTag = /<([^\/>]+)\/>/g;
-  const errorTag = /<</;
+  const textInTag = /<(\/)?([a-zA-Z]*)(\s[a-zA-Z]*=[^>]*)?(\s)*(\/)?>/ig;
   const xmlArr = xmlString.match(/<[^> ]+[^>]*>[^<]*/g);
   const storage = [];
   const open = {
     '<a>': '</a>',
-    '<b>': '</b>',
-    '<a>test': '</a>'
+    '<b>': '</b>'
   };
   const opentag = Object.keys(open);
   let result = true;
@@ -49,9 +48,9 @@ exports.isValidXML = xmlString => {
     }
   });
 
-  if ( xmlArr.length === 1 ) {
+  if (xmlArr.length === 1) {
     result = true;
-    if(!singleTag.test(xmlArr)) {
+    if (!singleTag.test(xmlArr)) {
       result = false;
     }
   } else {
@@ -67,6 +66,10 @@ exports.isValidXML = xmlString => {
         }
       }
     }
+  }
+
+  if (xmlString.replace(/<(\/[a-zA-Z]|[a-zA-Z])([^>]*)>/gi, "").replace(/</, "").length) {
+    result = true;
   }
 
   return result
