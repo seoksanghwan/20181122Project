@@ -36,39 +36,38 @@ exports.isValidXML = xmlString => {
   const open = {
     '<a>': '</a>',
     '<b>': '</b>',
-    '<a>test' : '</a>'
+    '<a>test': '</a>'
   };
   const opentag = Object.keys(open);
   let result = true;
 
-  if (errorTag.test(xmlArr)) {
-    result = false;
-  } else {
-    result = true;
-  }
-
-  if (xmlArr.length <= 1 && !singleTag.test(xmlArr)) {
-    result = false;
-  } 
-
   xmlArr.filter((item, idx, array) => {
     if (array.indexOf(item) !== idx) {
       result = false;
+    } else {
+      result = true;
     }
   });
 
-  for (var i = 0; i < xmlArr.length; i++) {
-    if (opentag.includes(xmlArr[i])) {
-      storage.push(xmlArr[i]);
-    } else {
-      const lastInStack = storage[storage.length - 1];
-      if (xmlArr[i] === open[lastInStack]) {
-        storage.pop();
+  if ( xmlArr.length === 1 ) {
+    result = true;
+    if(!singleTag.test(xmlArr)) {
+      result = false;
+    }
+  } else {
+    for (var i = 0; i < xmlArr.length; i++) {
+      if (opentag.includes(xmlArr[i])) {
+        storage.push(xmlArr[i]);
       } else {
-        result = false;
+        const lastInStack = storage[storage.length - 1];
+        if (xmlArr[i] === open[lastInStack]) {
+          storage.pop();
+        } else {
+          result = false;
+        }
       }
     }
   }
 
-  return result ? true : false;
+  return result
 };
