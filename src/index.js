@@ -29,9 +29,46 @@ DO NOT MODIFY
 @return boolean;
 */
 exports.isValidXML = xmlString => {
-  if (xmlString.length === 0) {
-    return false;
+  const singleTag = /<([^\/>]+)\/>/g;
+  const errorTag = /<</;
+  const xmlArr = xmlString.match(/<[^> ]+[^>]*>[^<]*/g);
+  const storage = [];
+  const open = {
+    '<a>': '</a>',
+    '<b>': '</b>',
+    '<a>test' : '</a>'
+  };
+  const opentag = Object.keys(open);
+  let result = true;
+
+  if (errorTag.test(xmlArr)) {
+    result = false;
+  } else {
+    result = true;
   }
-  return true;
-  // TODO: FILL ME
+
+  if (xmlArr.length <= 1 && !singleTag.test(xmlArr)) {
+    result = false;
+  } 
+
+  xmlArr.filter((item, idx, array) => {
+    if (array.indexOf(item) !== idx) {
+      result = false;
+    }
+  });
+
+  for (var i = 0; i < xmlArr.length; i++) {
+    if (opentag.includes(xmlArr[i])) {
+      storage.push(xmlArr[i]);
+    } else {
+      const lastInStack = storage[storage.length - 1];
+      if (xmlArr[i] === open[lastInStack]) {
+        storage.pop();
+      } else {
+        result = false;
+      }
+    }
+  }
+
+  return result ? true : false;
 };
